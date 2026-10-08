@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Services Panel</title>
+    <title>TikTok Bot Panel - رشق تيك توك</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -72,17 +72,6 @@
             height: 80px;
         }
 
-        .accounts-info {
-            background: #0f172a;
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--success-color);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
         .submit-btn {
             width: 100%;
             background-color: var(--primary-color);
@@ -108,19 +97,9 @@
 <body>
 
     <div class="container">
-        <h2>لوحة خدمات تيك توك</h2>
-
-        <!-- عداد الحسابات المضافة -->
-        <div class="accounts-info" id="accountsCounter">
-            عدد الحسابات المضافة في النظام: 0 حساب
-        </div>
+        <h2>لوحة رشق تيك توك (حسابات خاصة)</h2>
 
         <form id="serviceForm" onsubmit="handleSubmit(event)">
-            <div class="form-group">
-                <label>اسم المستخدم (Username)</label>
-                <input type="text" id="username" placeholder="@username" required>
-            </div>
-
             <div class="form-group">
                 <label>رابط المنشور (فيديو أو صور)</label>
                 <input type="url" id="postUrl" placeholder="https://www.tiktok.com/@user/video/..." required>
@@ -142,29 +121,19 @@
             <!-- حقل إدخال التعليقات يظهر فقط عند اختيار التعليقات -->
             <div class="form-group hidden" id="commentsGroup">
                 <label>اكتب التعليقات (كل تعليق في سطر منفصل)</label>
-                <textarea id="commentsText" placeholder="رائع جداً&#10;استمر&#10;جميل"></textarea>
+                <textarea id="commentsText" placeholder="رائع جداً&#10;جميل&#10;استمر"></textarea>
             </div>
 
             <div class="form-group">
-                <label>العدد المطلوب (حسب الحسابات المضافة)</label>
+                <label>العدد المطلوب تنفيذه</label>
                 <input type="number" id="quantity" placeholder="أدخل العدد" min="1" required>
             </div>
 
-            <button type="submit" class="submit-btn">تنفيذ الطلب</button>
+            <button type="submit" class="submit-btn">بدء التنفيذ بالحسابات</button>
         </form>
     </div>
 
-    <!-- ملف الحسابات المضافة داخل المشروع -->
-    <script src="accounts.js"></script>
-
     <script>
-        // تحديث عدد الحسابات تلقائياً من ملف accounts.js
-        window.onload = function() {
-            if (typeof systemAccounts !== 'undefined') {
-                document.getElementById('accountsCounter').innerText = `عدد الحسابات المضافة في النظام: ${systemAccounts.length} حساب`;
-            }
-        };
-
         function toggleCommentsField() {
             const serviceType = document.getElementById('serviceType').value;
             const commentsGroup = document.getElementById('commentsGroup');
@@ -178,15 +147,10 @@
         function handleSubmit(event) {
             event.preventDefault();
             const service = document.getElementById('serviceType').value;
-            const qty = parseInt(document.getElementById('quantity').value);
+            const qty = document.getElementById('quantity').value;
+            const url = document.getElementById('postUrl').value;
             
-            // التحقق من أن العدد لا يتجاوز عدد الحسابات المضافة في النظام
-            if (typeof systemAccounts !== 'undefined' && qty > systemAccounts.length) {
-                alert(`عذراً، العدد المطلوب (${qty}) أكبر من عدد الحسابات المتاحة في النظام (${systemAccounts.length})!`);
-                return;
-            }
-
-            alert('تم استلام طلبك بنجاح وجاري تنفيذه عبر الحسابات المتاحة!');
+            alert(`تم استلام الطلب بنجاح!\nالخدمة: ${service}\nالعدد: ${qty}\nسيتم استخدام الحسابات المسجلة محلياً للتنفيذ.`);
             document.getElementById('serviceForm').reset();
             toggleCommentsField();
         }
