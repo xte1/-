@@ -1,7 +1,20 @@
 name: Run TikTok Bot
 
 on:
-  workflow_dispatch: # يتيح لك تشغيل السكريبت يدوياً بضغطة زر من تطبيق أو موقع GitHub
+  workflow_dispatch:
+    inputs:
+      post_url:
+        description: 'رابط الفيديو'
+        required: true
+        type: string
+      service_type:
+        description: 'نوع الخدمة (views, likes, comments)'
+        required: true
+        type: string
+      quantity:
+        description: 'العدد المطلوب'
+        required: true
+        type: string
 
 jobs:
   run-bot:
@@ -20,5 +33,9 @@ jobs:
           pip install requests
 
       - name: Run Bot Script
+        env:
+          POST_URL: ${{ github.event.inputs.post_url }}
+          SERVICE_TYPE: ${{ github.event.inputs.service_type }}
+          QUANTITY: ${{ github.event.inputs.quantity }}
         run: |
           python bot.py
