@@ -36,8 +36,20 @@
 
         h2 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             color: var(--text-main);
+        }
+
+        .accounts-badge {
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--success-color);
+            font-weight: bold;
         }
 
         .form-group {
@@ -97,7 +109,12 @@
 <body>
 
     <div class="container">
-        <h2>لوحة رشق تيك توك (حسابات خاصة)</h2>
+        <h2>لوحة رشق تيك توك</h2>
+        
+        <!-- عداد الحسابات التلقائي -->
+        <div class="accounts-badge" id="accountsCounter">
+            جاري تحميل الحسابات...
+        </div>
 
         <form id="serviceForm" onsubmit="handleSubmit(event)">
             <div class="form-group">
@@ -118,22 +135,39 @@
                 </select>
             </div>
 
-            <!-- حقل إدخال التعليقات يظهر فقط عند اختيار التعليقات -->
             <div class="form-group hidden" id="commentsGroup">
                 <label>اكتب التعليقات (كل تعليق في سطر منفصل)</label>
-                <textarea id="commentsText" placeholder="رائع جداً&#10;جميل&#10;استمر"></textarea>
+                <textarea id="commentsText" placeholder="رائع جداً&#10;استمر"></textarea>
             </div>
 
             <div class="form-group">
-                <label>العدد المطلوب تنفيذه</label>
+                <label>العدد المطلوب</label>
                 <input type="number" id="quantity" placeholder="أدخل العدد" min="1" required>
             </div>
 
-            <button type="submit" class="submit-btn">بدء التنفيذ بالحسابات</button>
+            <button type="submit" class="submit-btn">تنفيذ الطلب</button>
         </form>
     </div>
 
     <script>
+        let totalAccounts = 0;
+
+        // جلب وحساب عدد الحسابات من ملف accounts.txt تلقائياً
+        async function loadAccountsCount() {
+            try {
+                const response = await fetch('accounts.txt');
+                const text = await response.text();
+                // تقسيم النص حسب الأسطر وحذف الأسطر الفارغة
+                const lines = text.split('\n').filter(line => line.trim() !== '');
+                totalAccounts = lines.length;
+                document.getElementById('accountsCounterinnerText' = `🔒 الحسابات المسجلة: ${totalAccounts} حساب`);
+            } catch (error) {
+                document.getElementById('accountsCounter').innerText = `⚠️ تعذر قراءة ملف الحسابات`;
+            }
+        }
+
+        window.onload = loadAccountsCount;
+
         function toggleCommentsField() {
             const serviceType = document.getElementById('serviceType').value;
             const commentsGroup = document.getElementById('commentsGroup');
@@ -146,11 +180,14 @@
 
         function handleSubmit(event) {
             event.preventDefault();
-            const service = document.getElementById('serviceType').value;
-            const qty = document.getElementById('quantity').value;
-            const url = document.getElementById('postUrl').value;
+            const qty = parseInt(document.getElementById('quantity').value);
             
-            alert(`تم استلام الطلب بنجاح!\nالخدمة: ${service}\nالعدد: ${qty}\nسيتم استخدام الحسابات المسجلة محلياً للتنفيذ.`);
+            if (qty > totalAccounts) {
+                alert(`عذراً، العدد المطلوب (${qty}) أكبر من الحسابات المتاحة لديك (${totalAccounts})!`);
+                return;
+            }
+
+            alert('تم استلام طلبك بنجاح وجاري التنفيذ عبر الحسابات المحفوظة.');
             document.getElementById('serviceForm').reset();
             toggleCommentsField();
         }
